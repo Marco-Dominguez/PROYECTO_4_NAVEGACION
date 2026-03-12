@@ -8,10 +8,13 @@
 import SwiftUI
 
 @main
-struct PROYECTO_4_NAVIGATIONApp: App {
+struct PruebasModelo2App: App {
+    @State var controlador = ControladorGeneral()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavegadorBasico()
+                .environment(controlador)
         }
     }
 }
