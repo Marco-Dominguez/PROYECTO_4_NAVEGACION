@@ -11,6 +11,7 @@ enum CamposRegistrarUsuario: String {
     case apodo = "apodo"
     case edad = "edad"
     case instagram = "instagram"
+    case nota = "nota"
 }
 
 struct RegistrarUsuario: View {
@@ -21,47 +22,88 @@ struct RegistrarUsuario: View {
     @State var instagram: String = ""
     @State var edad: String = ""
     @State var apodo: String = ""
+    @State var nota: String = ""
     
     @State var error: ErrorUI? = nil
 
-    
     var body: some View {
-        if(error != nil){
-            Text("Hay un problema, por favor resuelve")
-        }
-        
-        VStack{
-            // TextField("Nombre ", text: $nombre)
-            CampoTexto(
-                entrada: $nombre,
-                placeholder: "Nombre",
-                error: error,
-                id: CamposRegistrarUsuario.nombre.rawValue
-            )
-        
-            CampoTexto(
-                entrada: $apodo,
-                placeholder: "Apodo",
-                error: error,
-                id: CamposRegistrarUsuario.apodo.rawValue
-            )
+        ZStack {
+            Color.black.ignoresSafeArea()
             
-            TextField("Edad ", text: $edad)
-            
-            
-            TextField("Instagram ", text: $instagram)
-            
-            Button(action: {
-                validar_entradas()
-            }){
-                HStack{
-                    Text("Agregar usuario")
-                    Image(systemName: "person.fill.badge.plus")
+            VStack(spacing: 25) {
+                
+                Text("Nuevo Usuario")
+                    .font(.title2)
+                    .bold()
+                    .foregroundStyle(.white)
+                    .padding(.top, 20)
+                
+                if(error != nil){
+                    Text("Hay un problema, por favor resuelve")
+                        .foregroundStyle(.red)
+                        .font(.footnote)
                 }
+                
+                // Campos
+                VStack(spacing: 15) {
+                    CampoTexto(
+                        entrada: $nombre,
+                        placeholder: "Nombre",
+                        error: error,
+                        id: CamposRegistrarUsuario.nombre.rawValue
+                    )
+                    .padding()
+                    .background(Color(UIColor.darkGray))
+                    .cornerRadius(10)
+                    .foregroundStyle(.white)
+                
+                    CampoTexto(
+                        entrada: $apodo,
+                        placeholder: "Apodo",
+                        error: error,
+                        id: CamposRegistrarUsuario.apodo.rawValue
+                    )
+                    .padding()
+                    .background(Color(UIColor.darkGray))
+                    .cornerRadius(10)
+                    .foregroundStyle(.white)
+                    
+                    // No uso CampoTexto pq estos no tiene validaciones
+                    TextField("Edad", text: $edad)
+                        .keyboardType(.numberPad)
+                        .padding()
+                        .background(Color(UIColor.darkGray))
+                        .cornerRadius(10)
+                        .foregroundStyle(.white)
+                    
+                    TextField("Instagram (ej. @usuario)", text: $instagram)
+                        .autocapitalization(.none)
+                        .padding()
+                        .background(Color(UIColor.darkGray))
+                        .cornerRadius(10)
+                        .foregroundStyle(.white)
+                    
+                    TextField("Nota (Opcional)", text: $nota)
+                        .padding()
+                        .background(Color(UIColor.darkGray))
+                        .cornerRadius(10)
+                        .foregroundStyle(.white)
+                }
+                .padding(.horizontal)
+                
+                Spacer()
+                
+                // Agregar
+                Boton(
+                    texto: "Agregar usuario",
+                    icono: "person.fill.badge.plus",
+                    accion: { validar_entradas() }
+                )
+                .padding(.horizontal)
+                .padding(.bottom, 20)
             }
         }
-        .padding()
-        
+        .preferredColorScheme(.dark)
     }
     
     func validar_entradas(){
@@ -71,7 +113,6 @@ struct RegistrarUsuario: View {
                 error: "No tienes nombre, no seas webudo y ponte uno",
                 nivel_de_error: .gravitsimo
             )
-            
             return
         }
         
@@ -81,27 +122,29 @@ struct RegistrarUsuario: View {
                 error: "Apodo no valido, por favor selecciona otro",
                 nivel_de_error: .gravitsimo
             )
-            
             return
         }
         
         controlador.agregar_usuario(crear_usuario())
-        salir() // Salir de la ventana
+        salir()
+        
         apodo = ""
         nombre = ""
         edad = ""
         instagram = ""
+        nota = ""
     }
     
     func crear_usuario() -> Usuario{
         return Usuario(
             nombre: nombre,
-            edad: Int(edad)!,
-            apodo:apodo,
-            instagram: instagram
+            edad: Int(edad) ?? 16, // 16 default si se pone algo invalido
+            apodo: apodo,
+            instagram: instagram,
+            nota: nota.isEmpty ? nil : nota, // nil si no ponen nota
+            imagen: nil // sin imagen por default pq no hay carga de imagenes
         )
     }
-    
 }
 
 #Preview {
