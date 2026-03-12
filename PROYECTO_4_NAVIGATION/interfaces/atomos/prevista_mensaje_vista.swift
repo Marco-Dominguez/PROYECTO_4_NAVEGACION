@@ -8,36 +8,60 @@ import SwiftUI
 
 struct PrevistaMensaje: View {
     var mensaje: Mensaje
+    @Environment(ControladorGeneral.self) var controlador
     
     var body: some View {
-        HStack{
-            Image(systemName: "message")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 50)
-            
-            VStack(alignment: .leading){
-                HStack{
-                    //Spacer()
-                    Text("\(mensaje.id_usuario ?? "Anonimo" )")
-                        .background(Color.red)
-                }
-                .background(Color.cyan)
-                
-                Text("\(mensaje.texto)")
-                    .background(Color.yellow)
+        HStack(spacing: 15) {
+            // Imagen
+            if let usuarioRemitente = controlador.obtenerUsuario(por: mensaje.id_usuario),
+               let nombreImagen = usuarioRemitente.imagen {
+                Image(nombreImagen)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
+            } else {
+                Circle()
+                    .fill(LinearGradient(colors: [.purple, .orange], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 75, height: 75)
             }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(mensaje.id_usuario ?? "Usuario Anónimo")
+                    .font(.system(size: 16, weight: mensaje.esMensajeNoLeido ? .bold : .regular))
+                    .foregroundStyle(.white)
+                
+                HStack(spacing: 4) {
+                    Text(mensaje.texto)
+                        .font(.system(size: 14, weight: mensaje.esMensajeNoLeido ? .bold : .regular))
+                        .foregroundStyle(mensaje.esMensajeNoLeido ? .white : .gray)
+                        .lineLimit(1)
+                    
+                    Text("· \(controlador.calcularTiempoTranscurrido(desde: mensaje.fechaEnvio))")
+                        .font(.system(size: 14))
+                        .foregroundStyle(.gray)
+                }
+            }
+            
             Spacer()
+            
+            // Visto/n't
+            if mensaje.esMensajeNoLeido {
+                Circle()
+                    .fill(Color.blue)
+                    .frame(width: 10, height: 10)
+            }
         }
-        .padding()
-        .frame(height: 75)
-        .overlay{
-            RoundedRectangle(cornerRadius: 25, style: .circular)
-                .stroke(.black, lineWidth: 5)
-        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(Color.black)
     }
 }
 
 #Preview {
-    PrevistaMensaje(mensaje: mensajes_falsos[0])
+    ZStack {
+        Color.black.ignoresSafeArea()
+        PrevistaMensaje(mensaje: Mensaje(texto: "Hola", id_usuario: "Robert Patinazo", esMensajeNoLeido: true, fechaEnvio: Date().addingTimeInterval(-300)))
+            .environment(ControladorGeneral())
+    }
 }

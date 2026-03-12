@@ -25,4 +25,21 @@ class ControladorGeneral{
         
         print("LA canitdad actual de usuarios es: \(usuarios.count)")
     }
+    
+    func calcularTiempoTranscurrido(desde fecha: Date) -> String {
+            let intervalo = Date().timeIntervalSince(fecha)
+            let minutos = Int(intervalo / 60)
+            let horas = minutos / 60
+            let dias = horas / 24
+            
+            if dias > 0 { return "\(dias) d" }
+            if horas > 0 { return "\(horas) h" }
+            if minutos > 0 { return "\(minutos) min" }
+            return "Ahora"
+    }
+    
+    func obtenerUsuario(por nombre: String?) -> Usuario? {
+        guard let nombre = nombre else { return nil }
+        return usuarios.first { $0.nombre == nombre }
+    }
 }

@@ -10,4 +10,6 @@ struct Mensaje: Identifiable{
     let id = UUID()
     let texto: String
     let id_usuario: String?
+    var esMensajeNoLeido: Bool = false
+    var fechaEnvio: Date = Date()
 }

@@ -16,4 +16,6 @@ struct Usuario: Identifiable{
     let instagram: String
     
     let conectado: Bool = false
+    var nota: String? = nil
+    var imagen: String? = nil
 }
